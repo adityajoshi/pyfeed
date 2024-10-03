@@ -29,6 +29,26 @@ def display_csv(file_name):
         return str(e)
 
 
+# Function to update the CSV file to mark items as read
+def update_csv(file_name, title, status):
+    file_path = os.path.join(FEED_FOLDER, file_name)
+    rows = []
+
+    # Read the CSV and update the status of the matching title
+    with open(file_path, 'r', newline='', encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile)
+        rows = list(reader)
+
+        for row in rows:
+            if row[3] == title:  # Match based on title
+                row[0] = status  # Update the "Read" status
+
+    # Write the updated rows back to the CSV file
+    with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(rows)
+
+
 # Function to open a URL in the default browser
 def open_link(link):
     webbrowser.open_new(link)
@@ -37,10 +57,14 @@ def open_link(link):
 def draw_left_pane(stdscr, csv_files, selected_idx, left_w):
     """Draws the left pane showing the list of items."""
     stdscr.clear()
+    height, width = stdscr.getmaxyx()
     stdscr.addstr(0, 0, "Feeds:", curses.A_BOLD)
     
-    for idx, item in enumerate(csv_files):
-        if idx == selected_idx:
+    max_rows_to_display = height - 2  # Leave room for title and status bar
+    start_row = max(0, selected_idx - max_rows_to_display + 1)
+    end_row = min(start_row + max_rows_to_display, len(csv_files))
+    for idx, item in enumerate(csv_files[start_row:end_row]):
+        if start_row + idx == selected_idx:
             stdscr.addstr(idx + 1, 0, item, curses.A_REVERSE)  # Highlight selected item
         else:
             stdscr.addstr(idx + 1, 0, item)
@@ -67,9 +91,19 @@ def draw_right_pane(stdscr, csv_files, selected_idx, selected_item_idx, left_w):
             for idx, each_row in enumerate(csv_data[start_row:end_row]):
                 display_row = "  ".join(each_row[1::2])  # Display only first 4 columns (Read, Date, Owner, Title)
                 if start_row + idx == selected_item_idx:
-                    stdscr.addstr(idx+1, left_w // 2 + 2, display_row, curses.A_REVERSE)
+                    if each_row[0].lower() != 'true':
+                        stdscr.attron(curses.A_BOLD)
+                        stdscr.addstr(idx+1, left_w // 2 + 2, display_row, curses.A_REVERSE)
+                        stdscr.attroff(curses.A_BOLD)
+                    else:
+                        stdscr.addstr(idx+1, left_w // 2 + 2, display_row, curses.A_REVERSE)
                 else:
-                    stdscr.addstr(idx+1, left_w // 2 + 2, display_row)
+                    if each_row[0].lower() != 'true':
+                        stdscr.attron(curses.A_BOLD)
+                        stdscr.addstr(idx+1, left_w // 2 + 2, display_row)
+                        stdscr.attroff(curses.A_BOLD)
+                    else:
+                        stdscr.addstr(idx+1, left_w // 2 + 2, display_row)
     return csv_data
 
 def main(stdscr):
@@ -109,6 +143,16 @@ def main(stdscr):
                 selected_idx += 1
             if selected_item_idx < len(csv_data) - 1 and SELECTED_PANE == 1:
                 selected_item_idx += 1
+        elif key == ord('g'):
+            if SELECTED_PANE == 0:
+                selected_idx = 0
+            if SELECTED_PANE == 1:
+                selected_item_idx = 0
+        elif key == ord('G'):
+            if SELECTED_PANE == 0:
+                selected_idx = len(csv_files) - 1
+            if SELECTED_PANE == 1:
+                selected_item_idx = len(csv_data) - 1
         elif key == curses.KEY_LEFT or key == ord('h'):
             if SELECTED_PANE == 1:
                 SELECTED_PANE = 0
@@ -119,6 +163,10 @@ def main(stdscr):
             if csv_data:
                 link = csv_data[selected_item_idx][4] # Get link from selected row
                 open_link(link)
+        elif key == ord('r') and csv_data:
+            # Mark the selected row as read
+            csv_data[selected_item_idx][0] = 'True'  # +1 due to header row
+            update_csv(csv_files[selected_idx], csv_data[selected_item_idx][3], 'True')
         elif key == ord('q'):  # Press 'q' to quit
             break
 
