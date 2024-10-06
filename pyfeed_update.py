@@ -5,8 +5,6 @@ import csv
 from datetime import datetime
 from io import BytesIO
 
-from show_feeds import FEED_FOLDER
-
 FEED_FOLDER = 'feeds'
 
 RSS_FEEDS = {
@@ -14,26 +12,25 @@ RSS_FEEDS = {
     'Amit_Sengupta': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCYCVm1aN33HYdLs66DHw_ow',
     'Andreas_Kretz': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCY8mzqqGwl5_bTpBY9qLMAA',
     'baak6': 'https://baak6.com/rss.xml',
-    'Ben_Congdon': 'https://benjamincongdon.me/blog/feed.xml',
     'benkuhn': 'https://www.benkuhn.net/index.xml',
     'Aditya_Joshi': 'https://adityajoshi.github.io/index.xml',
     'Bear_Blog_Trending_Posts': 'https://bearblog.dev/discover/feed/',
-    'LOW←TECH_MAGAZINE': 'https://solar.lowtechmagazine.com/feeds/all-en.atom.xml',
-    'Blog | rsapkf': 'https://rsapkf.org/weblog/rss.xml',
-    'Blog | The Crow': 'https://thecrow.uk/feed.xml',
-    'Blog | The New Oil': 'https://write.as/thenewoil/feed/',
-    'Blog | Rodrigo Ghedin': 'https://notes.ghed.in/feed.xml',
-    'Blog | Tumfatig': 'https://www.tumfatig.net/index.xml',
-    'Blog | BrainBaking': 'https://brainbaking.com/index.xml',
-    'BSD | OpenBSD Webzine': 'https://webzine.puffy.cafe/atom.xml',
-    'BSD | RoboNuggie on Odysee': 'https://odysee.com/$/rss/@RoboNuggie:0',
-    'BSD | Root BSD on Odysee': 'https://odysee.com/$/rss/@rootbsd:6',
-    'BSD | That grumpy BSD guy': 'https://www.blogger.com/feeds/8616610987649128333/posts/default',
-    'BSD | The OpenBSD guy on Odysee': 'https://odysee.com/$/rss/@TheOpenBSDGuy:e',
-    'BSD | unixsheikh.com': 'https://unixsheikh.com/feed.rss',
-    'BSD | Vermaden posts': 'https://vermaden.wordpress.com/feed/',
+    'LOW_TECH_MAGAZINE': 'https://solar.lowtechmagazine.com/feeds/all-en.atom.xml',
+    'rsapkf': 'https://rsapkf.org/weblog/rss.xml',
+    'The Crow': 'https://thecrow.uk/feed.xml',
+    'The New Oil': 'https://write.as/thenewoil/feed/',
+    'Rodrigo Ghedin': 'https://notes.ghed.in/feed.xml',
+    'Tumfatig': 'https://www.tumfatig.net/index.xml',
+    'BrainBaking': 'https://brainbaking.com/index.xml',
+    'OpenBSD Webzine': 'https://webzine.puffy.cafe/atom.xml',
+    'RoboNuggie on Odysee': 'https://odysee.com/$/rss/@RoboNuggie:0',
+    'Root BSD on Odysee': 'https://odysee.com/$/rss/@rootbsd:6',
+    'That grumpy BSD guy': 'https://www.blogger.com/feeds/8616610987649128333/posts/default',
+    'The OpenBSD guy on Odysee': 'https://odysee.com/$/rss/@TheOpenBSDGuy:e',
+    'unixsheikh.com': 'https://unixsheikh.com/feed.rss',
+    'Vermaden posts': 'https://vermaden.wordpress.com/feed/',
     'Causal Agency': 'https://text.causal.agency/feed.atom',
-    'Cycling | The Indian Cyclist': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCXTSHJc5NgbenERc-Ku8h0Q',
+    'The Indian Cyclist': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCXTSHJc5NgbenERc-Ku8h0Q',
     'Dennis Ivy': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCTZRcDjjkVajGL6wd76UnGg',
     'Derek Banas': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCwRXb5dUK4cvsHbx-rGzSgw',
     'Derek Kedziora': 'https://derekkedziora.com/feed.xml',
@@ -57,8 +54,8 @@ RSS_FEEDS = {
     'Julian Dontcheff Database Blog': 'https://juliandontcheff.wordpress.com/feed/',
     'Kode Vicious': 'https://queue.acm.org/rss/feeds/kodevicious.xml',
     'Lane Blog': 'https://wagslane.dev/index.xml',
-    'Linux | gotbletu': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCkf4VIqu3Acnfzuk3kRIFwA',
-    'Linux | Linux Journal': 'https://www.linuxjournal.com/news/feed',
+    'gotbletu': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCkf4VIqu3Acnfzuk3kRIFwA',
+    'Linux Journal': 'https://www.linuxjournal.com/news/feed',
     'Luke Smith': 'https://lukesmith.xyz/rss.xml',
     'Luke Smith on Odysee': 'https://odysee.com/$/rss/@Luke:7',
     'Marco Codes': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCf4tsZfSZlBx2QusJg3HJew',
@@ -72,12 +69,12 @@ RSS_FEEDS = {
     'Rubenerd': 'https://rubenerd.com/feed/',
     'Simple Programming': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCDnZ8f2yo-JGBh8rOn30OAg',
      'Solene': 'https://dataswamp.org/~solene/rss.xml',
-     'SQL | Siva Academy': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBt6VrxAIb5jLh9HLDcdwtQ',
-     'SQL | The Magic of SQL': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCWeOtlakw8g01MrR8U4yYtg',
+     'Siva Academy': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBt6VrxAIb5jLh9HLDcdwtQ',
+     'The Magic of SQL': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCWeOtlakw8g01MrR8U4yYtg',
      'Standard Ebooks - Newest Ebooks': 'https://standardebooks.org/feeds/rss/new-releases',
      'Tech Coach': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCaBNj5bfIpRGuEx3k3ekNoA',
      'The jolly Teapot': 'https://thejollyteapot.com/feed.rss',
-     'Tools | The Plain Text Project': 'https://plaintextproject.online',
+     'The Plain Text Project': 'https://plaintextproject.online',
      'Veritasium': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCHnyfMqiRRG1u-2MsSQLbXA',
      'TED-Ed': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCsooa4yRKGN_zEE8iknghZA',
      'lon_tv_blog': 'https://blog.lon.tv/feed/',
@@ -146,25 +143,25 @@ RSS_FEEDS = {
      'text.casual': 'https://text.causal.agency/feed.atom',
      'Pursuit of Simplicity': 'https://pursuit-of-simplicity.pages.dev/atom.xml',
      'SmarterEveryDay': 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6107grRI4m0o2-emgoDnAA',
-     'Spring | spring.io_blog': 'https://spring.io/blog.atom',
-     'Spring | spring developers': 'https://www.youtube.com/feeds/videos.xml?channel_id=UC7yfnfvEUlXUIfm8rGLwZdA',
-     'Spring | Coffee + Software with Josh Long': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCjcceQmjS4DKBW_J_1UANow',
-     'Spring | Dan Vega': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCc98QQw1D-y38wg6mO3w4MQ',
-     'Java | DaShaun': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCuGoHRQbVXa4LxepmPOdUfQ',
-     'Java | EmbarkX': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCH_Wi8MidUKGlQvep9T7t4g',
-     'Java | Devtiro': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCSMkAXZB0IMmC-7eTUIae-w',
-     'Blog | scaglio': 'https://scaglio.bearblog.dev/feed/?type=rss',
-     'Blog | hanki.dev': 'https://hanki.dev/feed/',
-     'Blog | Mikhal Sapka': 'https://michal.sapka.me/index.xml',
-     'Blog | bt': 'https://btxx.org/index.rss',
-     'Blog | Jason Fried': 'https://world.hey.com/jason/feed.atom',
-     'Blog | Nithin Kamath': 'https://nithinkamath.me/index.xml',
-     'Blog | Steven Lambert': 'https://stevenklambert.com/feed.xml',
-     'Blog | commandlinefu': 'http://feeds2.feedburner.com/Command-line-fu',
-     'Rob knight': 'https://rknight.me/subscribe/everything/rss.xml',
+     'spring.io_blog': 'https://spring.io/blog.atom',
+     'spring developers': 'https://www.youtube.com/feeds/videos.xml?channel_id=UC7yfnfvEUlXUIfm8rGLwZdA',
+     'Coffee_Software_with_Josh_Long': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCjcceQmjS4DKBW_J_1UANow',
+     'Dan_Vega': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCc98QQw1D-y38wg6mO3w4MQ',
+     'DaShaun': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCuGoHRQbVXa4LxepmPOdUfQ',
+     'EmbarkX': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCH_Wi8MidUKGlQvep9T7t4g',
+     'Devtiro': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCSMkAXZB0IMmC-7eTUIae-w',
+     'scaglio': 'https://scaglio.bearblog.dev/feed/?type=rss',
+     'hanki.dev': 'https://hanki.dev/feed/',
+     'Mikhal_Sapka': 'https://michal.sapka.me/index.xml',
+     'bt': 'https://btxx.org/index.rss',
+     'Jason_Fried': 'https://world.hey.com/jason/feed.atom',
+     'Nithin_Kamath': 'https://nithinkamath.me/index.xml',
+     'Steven_Lambert': 'https://stevenklambert.com/feed.xml',
+     'commandlinefu': 'http://feeds2.feedburner.com/Command-line-fu',
+     'Rob_knight': 'https://rknight.me/subscribe/everything/rss.xml',
      'akashgoswami.com': 'https://akashgoswami.com/articles/index.xml',
      'akashgoswami.dev': 'https://akashgoswami.dev/posts/index.xml',
-     'YT | Every Paisa Matters': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCE43WLnnJlOaC45v3ZFPEDQ',
+     'Every_Paisa_Matters': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCE43WLnnJlOaC45v3ZFPEDQ',
      'Real_python_podcast': 'https://realpython.com/podcasts/rpp/feed',
      'Real_python_youtube': 'https://www.youtube.com/feeds/videos.xml?channel_id=UCI0vQvr9aFn27yR6Ej6n5UA'
 }
@@ -177,12 +174,11 @@ def update():
     """
     articles = []
     for source, feed in RSS_FEEDS.items():
-        print(source)
         cur_timestamp = datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0000")
         try:
             resp = requests.get(feed, timeout=20.0)
         except requests.ReadTimeout:
-            print(f'Timeout when reading RSS {feed}')
+            print(f'Timeout when reading RSS {feed}'.ljust(50, " "), "OK")
             continue
 
         content = BytesIO(resp.content)
@@ -191,7 +187,9 @@ def update():
         new_entries = [
             ("False", entry.get('published', cur_timestamp), entry.get('author', 'unknown'), entry.title, entry.link)
             for entry in parsed_feed.entries]
-        csv_file = source + '_records.csv'
+        source = source.replace(" ","_")
+        source = source.replace("-","_")
+        csv_file = source + '_records'
         # write_records_to_csv(entries, source + '_records.csv')
 
         # Load existing records from the CSV
@@ -203,9 +201,8 @@ def update():
         # Write only unique entries to the CSV file
         if unique_entries:
             write_records_to_csv(unique_entries, csv_file)
-            print(f"Added {len(unique_entries)} new entries for {source}.")
-        else:
-            print(f"No new entries for {source}.")
+
+        print(f"{source}        OK".rjust(10," "))
 
 
 def load_existing_records(csv_file):

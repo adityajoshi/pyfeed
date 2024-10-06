@@ -14,7 +14,7 @@ def find_csv_files():
     folder_path = os.path.join(os.getcwd(), FEED_FOLDER)
     if not os.path.exists(folder_path):
         return []
-    return [f for f in os.listdir(folder_path) if f.endswith('.csv')]
+    return [f for f in os.listdir(folder_path)]
 
 def display_csv(file_name):
     try:
@@ -42,6 +42,7 @@ def update_csv(file_name, title, status):
         for row in rows:
             if row[3] == title:  # Match based on title
                 row[0] = status  # Update the "Read" status
+
 
     # Write the updated rows back to the CSV file
     with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
@@ -136,11 +137,13 @@ def main(stdscr):
         if key == curses.KEY_UP or key == ord('k'):
             if selected_idx > 0 and SELECTED_PANE == 0:
                 selected_idx -= 1
+                selected_item_idx = 0
             if selected_item_idx > 0 and SELECTED_PANE == 1:
                 selected_item_idx -= 1
         elif key == curses.KEY_DOWN or key == ord('j'):
             if selected_idx < len(csv_files) - 1 and SELECTED_PANE == 0:
                 selected_idx += 1
+                selected_item_idx = 0
             if selected_item_idx < len(csv_data) - 1 and SELECTED_PANE == 1:
                 selected_item_idx += 1
         elif key == ord('g'):
