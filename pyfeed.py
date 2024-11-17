@@ -3,22 +3,23 @@ import csv
 import os
 import webbrowser
 
-FEED_FOLDER = 'feeds'
-
 #csv_files = ["Feed 1", "Feed 2", "Feed 3", "Feed 4", "Feed 5"]
 #csv_files = []
 # Sample data for the left pane
 
 # Function to find all CSV files in the folder
 def find_csv_files():
-    folder_path = os.path.join(os.getcwd(), FEED_FOLDER)
-    if not os.path.exists(folder_path):
+    feeds_path = os.path.expanduser("~/.pyfeed/feeds")
+    if not os.path.exists(feeds_path):
         return []
-    return [f for f in os.listdir(folder_path)]
+    return [f for f in os.listdir(feeds_path)]
 
 def display_csv(file_name):
     try:
-        with open(os.path.join(FEED_FOLDER, file_name), newline='', encoding='utf-8') as csvfile:
+        feed_path = os.path.expanduser("~/.pyfeed/feeds/"+file_name)
+        if not os.path.exists(feed_path):
+            raise FileNotFoundError(f"The feed folder {feed_path} does not exist.")
+        with open(os.path.join(feed_path), newline='', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
             rows = list(reader)
             if rows:
@@ -31,11 +32,11 @@ def display_csv(file_name):
 
 # Function to update the CSV file to mark items as read
 def update_csv(file_name, title, status):
-    file_path = os.path.join(FEED_FOLDER, file_name)
+    feed_path = os.path.expanduser("~/.pyfeed/feeds/"+file_name)
     rows = []
 
     # Read the CSV and update the status of the matching title
-    with open(file_path, 'r', newline='', encoding='utf-8') as csvfile:
+    with open(feed_path, 'r', newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         rows = list(reader)
 
@@ -45,16 +46,16 @@ def update_csv(file_name, title, status):
 
 
     # Write the updated rows back to the CSV file
-    with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+    with open(feed_path, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(rows)
 
 def update_all(file_name, status):
-    file_path = os.path.join(FEED_FOLDER, file_name)
+    feed_path = os.path.expanduser("~/.pyfeed/feeds/"+file_name)
     rows = []
 
     # Read the CSV and update the status of the matching title
-    with open(file_path, 'r', newline='', encoding='utf-8') as csvfile:
+    with open(feed_path, 'r', newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         rows = list(reader)
 
@@ -63,7 +64,7 @@ def update_all(file_name, status):
 
 
     # Write the updated rows back to the CSV file
-    with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+    with open(feed_path, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(rows)
 
@@ -90,7 +91,6 @@ def draw_left_pane(stdscr, csv_files, selected_idx, left_w):
 
 def draw_right_pane(stdscr, csv_files, selected_idx, selected_item_idx, left_w):
     """Draws the right pane showing the details of the selected item."""
-    #import ipdb; ipdb.set_trace()
     height, width = stdscr.getmaxyx()
     rows = 0
     if csv_files:

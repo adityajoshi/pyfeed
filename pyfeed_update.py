@@ -5,8 +5,6 @@ import csv
 from datetime import datetime
 from io import BytesIO
 
-FEED_FOLDER = 'feeds'
-
 RSS_FEEDS = {}
 
 
@@ -25,7 +23,6 @@ def update():
             continue
 
         content = BytesIO(resp.content)
-        #parsed_feed = feedparser.parse(feed)
         parsed_feed = feedparser.parse(content)
         new_entries = [
             ("False", entry.get('published', cur_timestamp), entry.get('author', 'unknown'), entry.title, entry.link)
@@ -33,7 +30,6 @@ def update():
         source = source.replace(" ","_")
         source = source.replace("-","_")
         csv_file = source + '_records'
-        # write_records_to_csv(entries, source + '_records.csv')
 
         # Load existing records from the CSV
         existing_records = load_existing_records(csv_file)
@@ -53,11 +49,15 @@ def load_existing_records(csv_file):
     Load existing records from the CSV file and return a set of unique links.
     :rtype: set
     """
-    if not os.path.exists('feeds/' + csv_file):
+    feeds_path = os.path.expanduser("~/.pyfeed/feeds/")
+    if not os.path.exists(feeds_path):
+        raise FileNotFoundError(f"The feeds folder {feeds_path} does not exist.")
+    if not os.path.exists(feeds_path + csv_file):
         return set()  # Return empty set if file doesn't exist yet
 
     existing_links = set()
-    with open('feeds/' + csv_file, 'r', newline='', encoding='utf-8') as file:
+
+    with open(feeds_path + csv_file, 'r', newline='', encoding='utf-8') as file:
         csv_reader = csv.reader(file, delimiter=",")
         for row in csv_reader:
             if row:  # Ensure row is not empty
@@ -66,7 +66,11 @@ def load_existing_records(csv_file):
 
 
 def write_records_to_csv(records, csv_file):
-    with open(os.path.join(FEED_FOLDER, csv_file), 'a', newline='', encoding='utf-8') as file:
+    feeds_path = os.path.expanduser("~/.pyfeed/feeds/")
+    if not os.path.exists(feeds_path):
+        raise FileNotFoundError(f"The feeds folder {feeds_path} does not exist.")
+
+    with open(feeds_path + csv_file, 'a', newline='', encoding='utf-8') as file:
         csv_writer = csv.writer(file, delimiter=",")
         # csv_writer.writerow(['id', 'win'])  # Write header
 
@@ -94,7 +98,6 @@ def read_feeds(rss_config):
 
 if __name__ == "__main__":
     try:
-        import pdb;pdb.set_trace()
         config = load_pyfeedrc()
         read_feeds(config)
         update()

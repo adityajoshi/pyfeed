@@ -3,22 +3,25 @@ pyfeed
 
 It converts RSS or Atom feeds from XML to a comma-separated file.
 
-Run
+Setup
 ---
 
 Create virtual env
-------------------
 
-python -m venv v_env
-source v_env/bin/active
-pip install -r requirements.txt
+$ python -m venv v_env
+$ source v_env/bin/active
+$ pip install -r requirements.txt
 
 Usage
 -----
 
+Initial setup:
+
+    mkdir -p "$HOME/.pyfeed/"
+
 To update your feeds.
 
-python pyfeed_update.py
+$ python pyfeed_update.py
 
 To view feeds.
-python pyfeed.py
+$ python pyfeed.py
