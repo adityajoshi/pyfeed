@@ -1,0 +1,3 @@
+FEEDS={
+    'example': 'http://example.com/rss'
+}
