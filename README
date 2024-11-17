@@ -26,6 +26,6 @@ This file is consumed as a python dictionary for pyfeed_update.
 Update feeds
 $ python pyfeed_update.py
 
-View feeds.
+View feeds
 $ python pyfeed.py
 
