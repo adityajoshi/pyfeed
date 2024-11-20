@@ -21,6 +21,9 @@ def update():
         except requests.ReadTimeout:
             print(f'Timeout when reading RSS {feed}'.ljust(50, " "), "OK")
             continue
+        except requests.exceptions.ConnectionError:
+            print(f"Error loading {feed}")
+            continue
 
         content = BytesIO(resp.content)
         parsed_feed = feedparser.parse(content)
@@ -83,7 +86,6 @@ def load_pyfeedrc():
     if not os.path.exists(pyfeedrc_path):
         raise FileNotFoundError(f"The configuration file {pyfeedrc_path} does not exist.")
 
-    global RSS_FEEDS
     config = {}
     with open(pyfeedrc_path, "r") as f:
         # Use exec to execute the Python file in the context of the `config` dictionary.
@@ -94,6 +96,7 @@ def load_pyfeedrc():
     return config
 
 def read_feeds(rss_config):
+    global RSS_FEEDS
     RSS_FEEDS.update(rss_config.get("FEEDS",{}))
 
 if __name__ == "__main__":
