@@ -44,7 +44,7 @@ def update():
         if unique_entries:
             write_records_to_csv(unique_entries, csv_file)
 
-        print(f"{source}        OK".rjust(10," "))
+        print(f"{source}".ljust(50," "),"OK")
 
 
 def load_existing_records(csv_file):
