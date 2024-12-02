@@ -8,6 +8,24 @@ from io import BytesIO
 RSS_FEEDS = {}
 
 
+def parse_date_to_sortable(date_str, fallback):
+    """
+    Parse a date string into a sortable format '%Y%m%d%H%M%S'.
+    Handles both ISO 8601 and RFC 1123 formats.
+    If parsing fails, returns the fallback value.
+    """
+    date_formats = [
+        "%Y-%m-%dT%H:%M:%S%z",  # ISO 8601
+        "%a, %d %b %Y %H:%M:%S %z"  # RFC 1123
+    ]
+    for date_format in date_formats:
+        try:
+            return datetime.strptime(date_str, date_format).strftime("%Y%m%d%H%M%S")
+        except ValueError:
+            continue
+    # Return fallback if all parsing attempts fail
+    return fallback
+
 def update():
     """
 
@@ -15,7 +33,7 @@ def update():
     """
     articles = []
     for source, feed in RSS_FEEDS.items():
-        cur_timestamp = datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0000")
+        cur_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         try:
             resp = requests.get(feed, timeout=20.0)
         except requests.ReadTimeout:
@@ -28,7 +46,10 @@ def update():
         content = BytesIO(resp.content)
         parsed_feed = feedparser.parse(content)
         new_entries = [
-            ("False", entry.get('published', cur_timestamp), entry.get('author', 'unknown'), entry.title, entry.link)
+            ("False", parse_date_to_sortable(entry.get('published',
+                                                       ""), cur_timestamp),
+                                             entry.get('author', 'unknown'),
+                                             entry.title, entry.link)
             for entry in parsed_feed.entries]
         source = source.replace(" ","_")
         source = source.replace("-","_")
@@ -39,6 +60,10 @@ def update():
 
         # Filter out entries that are already present in the CSV (based on the unique 'link' field)
         unique_entries = [entry for entry in new_entries if entry[3] not in existing_records]
+
+        # Sort entries by the 'published' field (descending order)
+        sorted_entries = sorted(unique_entries, key=lambda x: x[1],
+                                reverse=True)
 
         # Write only unique entries to the CSV file
         if unique_entries:
