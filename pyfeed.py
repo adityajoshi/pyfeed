@@ -2,6 +2,7 @@ import curses
 import csv
 import os
 import webbrowser
+import common
 
 #csv_files = ["Feed 1", "Feed 2", "Feed 3", "Feed 4", "Feed 5"]
 #csv_files = []
@@ -9,17 +10,17 @@ import webbrowser
 
 # Function to find all CSV files in the folder
 def find_csv_files():
-    feeds_path = os.path.expanduser("~/.pyfeed/feeds")
+    feeds_path = common.FEEDS_DIR
     if not os.path.exists(feeds_path):
         return []
     return [f for f in os.listdir(feeds_path)]
 
 def display_csv(file_name):
     try:
-        feed_path = os.path.expanduser("~/.pyfeed/feeds/"+file_name)
+        feed_path = os.path.join(common.FEEDS_DIR, file_name)
         if not os.path.exists(feed_path):
-            raise FileNotFoundError(f"The feed folder {feed_path} does not exist.")
-        with open(os.path.join(feed_path), newline='', encoding='utf-8') as csvfile:
+            raise FileNotFoundError(f"The feed file {feed_path} does not exist.")
+        with open(feed_path, newline='', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
             rows = list(reader)
             if rows:
@@ -31,17 +32,17 @@ def display_csv(file_name):
 
 
 # Function to update the CSV file to mark items as read
-def update_csv(file_name, title, status):
-    feed_path = os.path.expanduser("~/.pyfeed/feeds/"+file_name)
+def update_csv(file_name, link, status):
+    feed_path = os.path.join(common.FEEDS_DIR, file_name)
     rows = []
 
-    # Read the CSV and update the status of the matching title
+    # Read the CSV and update the status of the matching link
     with open(feed_path, 'r', newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         rows = list(reader)
 
         for row in rows:
-            if row[3] == title:  # Match based on title
+            if row[4] == link:  # Match based on link
                 row[0] = status  # Update the "Read" status
 
 
@@ -51,7 +52,7 @@ def update_csv(file_name, title, status):
         writer.writerows(rows)
 
 def update_all(file_name, status):
-    feed_path = os.path.expanduser("~/.pyfeed/feeds/"+file_name)
+    feed_path = os.path.join(common.FEEDS_DIR, file_name)
     rows = []
 
     # Read the CSV and update the status of the matching title
@@ -187,11 +188,12 @@ def main(stdscr):
         elif key == ord('r') and csv_data:
             # Mark the selected row as read
             csv_data[selected_item_idx][0] = 'True'  # +1 due to header row
-            update_csv(csv_files[selected_idx], csv_data[selected_item_idx][3], 'True')
+            update_csv(csv_files[selected_idx], csv_data[selected_item_idx][4], 'True')
         elif key == ord('F') and csv_data:
             # Mark the selected file as read
             update_all(csv_files[selected_idx], 'True')
         elif key == ord('q'):  # Press 'q' to quit
             break
 
-curses.wrapper(main)
+if __name__ == "__main__":
+    curses.wrapper(main)

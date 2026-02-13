@@ -3,3 +3,5 @@ pyfeed/
 .idea/
 v_env/
 pf/
+__pycache__/
+*.pyc

@@ -4,6 +4,7 @@ import os
 import csv
 from datetime import datetime
 from io import BytesIO
+import common
 
 RSS_FEEDS = {}
 
@@ -31,6 +32,7 @@ def update():
 
     :rtype: list
     """
+    common.ensure_dirs()
     articles = []
     for source, feed in RSS_FEEDS.items():
         cur_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -59,7 +61,7 @@ def update():
         existing_records = load_existing_records(csv_file)
 
         # Filter out entries that are already present in the CSV (based on the unique 'link' field)
-        unique_entries = [entry for entry in new_entries if entry[3] not in existing_records]
+        unique_entries = [entry for entry in new_entries if entry[4] not in existing_records]
 
         # Sort entries by the 'published' field (descending order)
         sorted_entries = sorted(unique_entries, key=lambda x: x[1],
@@ -77,28 +79,28 @@ def load_existing_records(csv_file):
     Load existing records from the CSV file and return a set of unique links.
     :rtype: set
     """
-    feeds_path = os.path.expanduser("~/.pyfeed/feeds/")
-    if not os.path.exists(feeds_path):
-        raise FileNotFoundError(f"The feeds folder {feeds_path} does not exist.")
-    if not os.path.exists(feeds_path + csv_file):
+    if not os.path.exists(common.FEEDS_DIR):
+        raise FileNotFoundError(f"The feeds folder {common.FEEDS_DIR} does not exist.")
+    file_path = os.path.join(common.FEEDS_DIR, csv_file)
+    if not os.path.exists(file_path):
         return set()  # Return empty set if file doesn't exist yet
 
     existing_links = set()
 
-    with open(feeds_path + csv_file, 'r', newline='', encoding='utf-8') as file:
+    with open(file_path, 'r', newline='', encoding='utf-8') as file:
         csv_reader = csv.reader(file, delimiter=",")
         for row in csv_reader:
             if row:  # Ensure row is not empty
-                existing_links.add(row[3])  # The link is at index 3 in the tuple
+                existing_links.add(row[4])  # The link is at index 4 in the tuple
     return existing_links
 
 
 def write_records_to_csv(records, csv_file):
-    feeds_path = os.path.expanduser("~/.pyfeed/feeds/")
-    if not os.path.exists(feeds_path):
-        raise FileNotFoundError(f"The feeds folder {feeds_path} does not exist.")
+    if not os.path.exists(common.FEEDS_DIR):
+        raise FileNotFoundError(f"The feeds folder {common.FEEDS_DIR} does not exist.")
 
-    with open(feeds_path + csv_file, 'a', newline='', encoding='utf-8') as file:
+    file_path = os.path.join(common.FEEDS_DIR, csv_file)
+    with open(file_path, 'a', newline='', encoding='utf-8') as file:
         csv_writer = csv.writer(file, delimiter=",")
         # csv_writer.writerow(['id', 'win'])  # Write header
 
@@ -107,7 +109,7 @@ def write_records_to_csv(records, csv_file):
 
 def load_pyfeedrc():
     """Load the configurations from the pyfeedrc file located in $HOME/.pyfeed."""
-    pyfeedrc_path = os.path.expanduser("~/.pyfeed/pyfeedrc")
+    pyfeedrc_path = common.CONFIG_FILE
     if not os.path.exists(pyfeedrc_path):
         raise FileNotFoundError(f"The configuration file {pyfeedrc_path} does not exist.")
 
