@@ -73,5 +73,21 @@ class TestPyfeed(unittest.TestCase):
         self.assertEqual(rows[1][0], "False")
         self.assertEqual(rows[1][4], "http://example.com/2")
 
+    def test_format_display_date(self):
+        """Test the date formatting function."""
+        # Test valid date format
+        date_str = "20241119222120"
+        expected = "19-NOV-2024"
+        self.assertEqual(pyfeed.format_display_date(date_str), expected)
+
+        # Test another valid date
+        date_str = "20230101000000"
+        expected = "01-JAN-2023"
+        self.assertEqual(pyfeed.format_display_date(date_str), expected)
+
+        # Test invalid date format (should return original string)
+        invalid_date = "invalid-date"
+        self.assertEqual(pyfeed.format_display_date(invalid_date), invalid_date)
+
 if __name__ == '__main__':
     unittest.main()
