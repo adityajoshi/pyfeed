@@ -89,5 +89,22 @@ class TestPyfeed(unittest.TestCase):
         invalid_date = "invalid-date"
         self.assertEqual(pyfeed.format_display_date(invalid_date), invalid_date)
 
+    def test_find_index_string(self):
+        data = ["Apple", "Banana", "Cherry"]
+        self.assertEqual(pyfeed.find_index(data, "ban"), 1)
+        self.assertEqual(pyfeed.find_index(data, "cherry"), 2)
+        self.assertEqual(pyfeed.find_index(data, "xyz"), -1)
+        self.assertEqual(pyfeed.find_index(data, "Apple"), 0)
+
+    def test_find_index_with_key_func(self):
+        data = [
+            {"name": "Item 1", "desc": "Desc 1"},
+            {"name": "Item 2", "desc": "Desc 2"},
+        ]
+        key_func = lambda x: x["name"]
+        self.assertEqual(pyfeed.find_index(data, "item 2", key_func), 1)
+        self.assertEqual(pyfeed.find_index(data, "item 1", key_func), 0)
+        self.assertEqual(pyfeed.find_index(data, "xyz", key_func), -1)
+
 if __name__ == '__main__':
     unittest.main()

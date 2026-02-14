@@ -88,6 +88,27 @@ def format_display_date(date_str):
         return date_str
 
 
+def find_index(data_list, query, key_func=lambda x: x):
+    query = query.lower()
+    for i, item in enumerate(data_list):
+        val = key_func(item)
+        if query in val.lower():
+            return i
+    return -1
+
+
+def get_input(stdscr, prompt_str):
+    curses.echo()
+    height, width = stdscr.getmaxyx()
+    stdscr.addstr(height - 1, 0, " " * (width - 1)) # Clear status bar
+    stdscr.addstr(height - 1, 0, prompt_str)
+    stdscr.refresh()
+    max_len = width - len(prompt_str) - 1
+    input_str = stdscr.getstr(height - 1, len(prompt_str), max_len).decode('utf-8')
+    curses.noecho()
+    return input_str
+
+
 def draw_left_pane(stdscr, csv_files, selected_idx, left_w):
     """Draws the left pane showing the list of items."""
     # Clear left pane area
@@ -185,7 +206,7 @@ def main(stdscr):
         csv_data = draw_right_pane(stdscr, csv_files, selected_idx, selected_item_idx, left_w)
 
         # Status bar at the bottom
-        stdscr.addstr(height - 1, 0, "Press 'q' to quit, Arrow keys to navigate.", curses.A_DIM)
+        stdscr.addstr(height - 1, 0, "Press 'q' to quit, '/' to search, Arrow keys to navigate.", curses.A_DIM)
 
         stdscr.refresh()
 
@@ -231,6 +252,18 @@ def main(stdscr):
         elif key == ord('F') and csv_data:
             # Mark the selected file as read
             update_all(csv_files[selected_idx], 'True')
+        elif key == ord('/'):
+            query = get_input(stdscr, "Search: ")
+            if query:
+                if SELECTED_PANE == 0:
+                    idx = find_index(csv_files, query)
+                    if idx != -1:
+                        selected_idx = idx
+                        selected_item_idx = 0
+                elif SELECTED_PANE == 1 and csv_data:
+                    idx = find_index(csv_data, query, lambda x: x[3])
+                    if idx != -1:
+                        selected_item_idx = idx
         elif key == ord('q'):  # Press 'q' to quit
             break
 
