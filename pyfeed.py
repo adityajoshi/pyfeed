@@ -3,6 +3,7 @@ import csv
 import os
 import webbrowser
 import common
+from datetime import datetime
 
 #csv_files = ["Feed 1", "Feed 2", "Feed 3", "Feed 4", "Feed 5"]
 #csv_files = []
@@ -75,6 +76,18 @@ def open_link(link):
     webbrowser.open_new(link)
 
 
+def format_display_date(date_str):
+    """
+    Formats the date string from YYYYMMDDHHMMSS to DD-MON-YYYY.
+    Example: 20241119222120 -> 19-NOV-2024
+    """
+    try:
+        dt = datetime.strptime(date_str, "%Y%m%d%H%M%S")
+        return dt.strftime("%d-%b-%Y").upper()
+    except ValueError:
+        return date_str
+
+
 def draw_left_pane(stdscr, csv_files, selected_idx, left_w):
     """Draws the left pane showing the list of items."""
     # Clear left pane area
@@ -127,8 +140,11 @@ def draw_right_pane(stdscr, csv_files, selected_idx, selected_item_idx, left_w):
             end_row = min(start_row + max_rows_to_display, rows)
 
             for idx, each_row in enumerate(csv_data[start_row:end_row]):
-                display_row = "  ".join(each_row[1::2])  # Display only first 4 columns (Read, Date, Owner, Title)
-                
+                date_str = each_row[1]
+                formatted_date = format_display_date(date_str)
+                title = each_row[3]
+                display_row = f"{formatted_date}  {title}"
+
                 # Truncate to fit right pane
                 if len(display_row) > right_pane_width - 2:
                     display_row = display_row[:right_pane_width - 3] + "…"
