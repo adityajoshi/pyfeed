@@ -1,31 +1,101 @@
-pyfeed
--------
+# PyFeed
 
-It converts RSS or Atom feeds from XML to a comma-separated file.
+PyFeed is a terminal-based RSS/Atom feed reader written in Python. It uses `curses` for the interface, allowing you to browse and read your news feeds directly from the command line.
 
-Setup
----
+The application idea is taken from [sfeed](https://codemadness.org/git/sfeed/file/README.html) which is written in C.
 
-Create virtual env
+## Features
 
-$ python -m venv v_env
-$ source v_env/bin/active
-$ pip install -r requirements.txt
+-   **Two-Pane Interface:** Browse feed sources primarily on the left and their articles on the right.
+-   **Vim-like Navigation:** Use `j`, `k`, `h`, `l` for efficient navigation.
+-   **Search:** Integrated search functionality to find specific articles or feeds.
+-   **Browser Integration:** Open articles in your default web browser.
+-   **Read State Tracking:** Mark articles or entire feeds as read.
 
-Usage
------
+## Installation
 
-Initial setup:
+### Prerequisites
 
-    mkdir -p "$HOME/.pyfeed/"
-    cp pyfeedrc.example "$HOME/.pyfeed/pyfeedrc"
+-   Python 3.x
+-   `pip` (Python package installer)
 
-Edit the pyfeedrc configuration file and change any RSS/Atom feeds. 
-This file is consumed as a python dictionary for pyfeed_update.
+### Setup
 
-Update feeds
-$ python pyfeed_update.py
+1.  **Clone the repository** (if you haven't already):
+    ```bash
+    git clone <repository-url>
+    cd pyfeed
+    ```
 
-View feeds
-$ python pyfeed.py
+2.  **Create a virtual environment:**
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
+3.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+## Configuration
+
+PyFeed requires a configuration file and a data directory in your home folder.
+
+1.  **Create the configuration directory:**
+    ```bash
+    mkdir -p ~/.pyfeed/feeds
+    ```
+
+2.  **Copy the example configuration:**
+    ```bash
+    cp pyfeedrc.example ~/.pyfeed/pyfeedrc
+    ```
+
+3.  **Edit the configuration:**
+    Open `~/.pyfeed/pyfeedrc` in your text editor and add your RSS/Atom feeds in the `FEEDS` dictionary.
+
+    ```python
+    FEEDS = {
+        'News Site': 'https://example.com/rss',
+        'Blog': 'https://blog.example.com/feed.xml'
+    }
+    ```
+
+## Usage
+
+### 1. Update Feeds
+Before reading, you need to fetch the latest articles from your configured feeds.
+
+```bash
+python pyfeed_update.py
+```
+
+### 2. View Feeds
+Launch the main application to browse your feeds.
+
+```bash
+python pyfeed.py
+```
+
+## specific Controls & Shortcuts
+
+| Key Control | Action |
+| :--- | :--- |
+| **Navigation** | |
+| `j` / `Down` | Move selection down |
+| `k` / `Up` | Move selection up |
+| `h` / `Left` | Switch focus to Left Pane (Feed List) |
+| `l` / `Right` | Switch focus to Right Pane (Article List) |
+| `g` | Jump to top of list |
+| `G` | Jump to bottom of list |
+| **Actions** | |
+| `Enter` | Open selected article in default browser |
+| `r` | Mark selected article as **Read** |
+| `F` | Mark all articles in current feed as **Read** |
+| **Search** | |
+| `/` | Search for text in the current list |
+| `n` | Jump to **Next** search result |
+| `p` | Jump to **Previous** search result |
+| **General** | |
+| `q` | Quit application |
