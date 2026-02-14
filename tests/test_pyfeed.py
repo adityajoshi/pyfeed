@@ -106,5 +106,27 @@ class TestPyfeed(unittest.TestCase):
         self.assertEqual(pyfeed.find_index(data, "item 1", key_func), 0)
         self.assertEqual(pyfeed.find_index(data, "xyz", key_func), -1)
 
+    def test_find_next(self):
+        data = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Banana"]
+        # Find next "Banana" starting from index 1 (should find index 5)
+        self.assertEqual(pyfeed.find_next(data, "Banana", 1), 5)
+        # Find next "Banana" starting from index 5 (wrap around to 1)
+        self.assertEqual(pyfeed.find_next(data, "Banana", 5), 1)
+        # Find next "Apple" starting from index 2 (wrap around to 0)
+        self.assertEqual(pyfeed.find_next(data, "Apple", 2), 0)
+        # No match
+        self.assertEqual(pyfeed.find_next(data, "Fig", 0), -1)
+
+    def test_find_prev(self):
+        data = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Banana"]
+        # Find prev "Banana" starting from index 5 (should find index 1)
+        self.assertEqual(pyfeed.find_prev(data, "Banana", 5), 1)
+        # Find prev "Banana" starting from index 1 (wrap around to 5)
+        self.assertEqual(pyfeed.find_prev(data, "Banana", 1), 5)
+        # Find prev "Apple" starting from index 2 (should find index 0)
+        self.assertEqual(pyfeed.find_prev(data, "Apple", 2), 0)
+        # No match
+        self.assertEqual(pyfeed.find_prev(data, "Fig", 0), -1)
+
 if __name__ == '__main__':
     unittest.main()

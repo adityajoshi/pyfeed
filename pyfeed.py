@@ -97,6 +97,39 @@ def find_index(data_list, query, key_func=lambda x: x):
     return -1
 
 
+def find_next(data_list, query, start_index, key_func=lambda x: x, wrap=True):
+    query = query.lower()
+    # Search from start_index + 1 to end
+    for i in range(start_index + 1, len(data_list)):
+        val = key_func(data_list[i])
+        if query in val.lower():
+            return i
+    
+    # Wrap around search from 0 to start_index
+    if wrap:
+        for i in range(0, start_index + 1):
+             val = key_func(data_list[i])
+             if query in val.lower():
+                 return i
+    return -1
+
+def find_prev(data_list, query, start_index, key_func=lambda x: x, wrap=True):
+    query = query.lower()
+    # Search from start_index - 1 down to 0
+    for i in range(start_index - 1, -1, -1):
+        val = key_func(data_list[i])
+        if query in val.lower():
+            return i
+            
+    # Wrap around search from end to start_index
+    if wrap:
+        for i in range(len(data_list) - 1, start_index - 1, -1):
+            val = key_func(data_list[i])
+            if query in val.lower():
+                return i
+    return -1
+
+
 def get_input(stdscr, prompt_str):
     curses.echo()
     height, width = stdscr.getmaxyx()
@@ -192,6 +225,7 @@ def main(stdscr):
     selected_item_idx = 0
     SELECTED_PANE = 0
     csv_files = find_csv_files()
+    last_query = "" # Store the last search query
     # 0 is for left, 1 for right
 
     while True:
@@ -206,7 +240,8 @@ def main(stdscr):
         csv_data = draw_right_pane(stdscr, csv_files, selected_idx, selected_item_idx, left_w)
 
         # Status bar at the bottom
-        stdscr.addstr(height - 1, 0, "Press 'q' to quit, '/' to search, Arrow keys to navigate.", curses.A_DIM)
+        status_msg = f"Press 'q' to quit, '/' search, 'n' next, 'p' prev. Query: '{last_query}'"
+        stdscr.addstr(height - 1, 0, status_msg[:width-1], curses.A_DIM)
 
         stdscr.refresh()
 
@@ -255,6 +290,7 @@ def main(stdscr):
         elif key == ord('/'):
             query = get_input(stdscr, "Search: ")
             if query:
+                last_query = query # Update last query
                 if SELECTED_PANE == 0:
                     idx = find_index(csv_files, query)
                     if idx != -1:
@@ -262,6 +298,26 @@ def main(stdscr):
                         selected_item_idx = 0
                 elif SELECTED_PANE == 1 and csv_data:
                     idx = find_index(csv_data, query, lambda x: x[3])
+                    if idx != -1:
+                        selected_item_idx = idx
+        elif key == ord('n'): # Find Next
+            if last_query:
+                if SELECTED_PANE == 0:
+                    idx = find_next(csv_files, last_query, selected_idx)
+                    if idx != -1:
+                        selected_idx = idx
+                elif SELECTED_PANE == 1 and csv_data:
+                    idx = find_next(csv_data, last_query, selected_item_idx, lambda x: x[3])
+                    if idx != -1:
+                        selected_item_idx = idx
+        elif key == ord('p'): # Find Previous
+             if last_query:
+                if SELECTED_PANE == 0:
+                    idx = find_prev(csv_files, last_query, selected_idx)
+                    if idx != -1:
+                        selected_idx = idx
+                elif SELECTED_PANE == 1 and csv_data:
+                    idx = find_prev(csv_data, last_query, selected_item_idx, lambda x: x[3])
                     if idx != -1:
                         selected_item_idx = idx
         elif key == ord('q'):  # Press 'q' to quit
