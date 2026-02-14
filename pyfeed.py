@@ -77,32 +77,50 @@ def open_link(link):
 
 def draw_left_pane(stdscr, csv_files, selected_idx, left_w):
     """Draws the left pane showing the list of items."""
-    stdscr.clear()
+    # Clear left pane area
     height, width = stdscr.getmaxyx()
+    for y in range(height):
+        stdscr.addstr(y, 0, " " * (left_w - 1))
+        stdscr.addstr(y, left_w - 1, "|") # Vertical separator
+
     stdscr.addstr(0, 0, "Feeds:", curses.A_BOLD)
 
     max_rows_to_display = height - 2  # Leave room for title and status bar
     start_row = max(0, selected_idx - max_rows_to_display + 1)
     end_row = min(start_row + max_rows_to_display, len(csv_files))
+    
     for idx, item in enumerate(csv_files[start_row:end_row]):
+        # Truncate item name if it's too long
+        display_item = item
+        if len(display_item) > left_w - 2:
+             display_item = display_item[:left_w - 3] + "…"
+        
         if start_row + idx == selected_idx:
-            stdscr.addstr(idx + 1, 0, item, curses.A_REVERSE)  # Highlight selected item
+            stdscr.addstr(idx + 1, 0, display_item, curses.A_REVERSE)  # Highlight selected item
         else:
-            stdscr.addstr(idx + 1, 0, item)
+            stdscr.addstr(idx + 1, 0, display_item)
 
 def draw_right_pane(stdscr, csv_files, selected_idx, selected_item_idx, left_w):
     """Draws the right pane showing the details of the selected item."""
     height, width = stdscr.getmaxyx()
+    right_pane_start_x = left_w + 1
+    right_pane_width = width - right_pane_start_x
+    
+    # Clear right pane area
+    for y in range(height - 1): # Leave status bar line
+        stdscr.addstr(y, right_pane_start_x, " " * (right_pane_width - 1))
+
     rows = 0
+    csv_data = [] # Initialize csv_data to safe default
     if csv_files:
         feed_name = csv_files[selected_idx]
         #details = data[feed_name]
         csv_data = display_csv(feed_name)
         if isinstance(csv_data, str):  # In case of an error
-            stdscr.addstr(0, left_w // 2+2, f"Error loading {feed_name}: {csv_data}")
+            stdscr.addstr(0, right_pane_start_x + 1, f"Error loading {feed_name}: {csv_data}")
         else:
             rows = len(csv_data)
-            stdscr.addstr(0, left_w // 2 + 2, "Details:", curses.A_BOLD)
+            stdscr.addstr(0, right_pane_start_x + 1, "Details:", curses.A_BOLD)
             # Limit the display to the terminal's height minus space for title/status
             max_rows_to_display = height - 2  # Leave room for title and status bar
             start_row = max(0, selected_item_idx - max_rows_to_display + 1)
@@ -110,20 +128,25 @@ def draw_right_pane(stdscr, csv_files, selected_idx, selected_item_idx, left_w):
 
             for idx, each_row in enumerate(csv_data[start_row:end_row]):
                 display_row = "  ".join(each_row[1::2])  # Display only first 4 columns (Read, Date, Owner, Title)
+                
+                # Truncate to fit right pane
+                if len(display_row) > right_pane_width - 2:
+                    display_row = display_row[:right_pane_width - 3] + "…"
+
                 if start_row + idx == selected_item_idx:
                     if each_row[0].lower() != 'true':
                         stdscr.attron(curses.A_BOLD)
-                        stdscr.addstr(idx+1, left_w // 2 + 2, display_row, curses.A_REVERSE)
+                        stdscr.addstr(idx+1, right_pane_start_x + 1, display_row, curses.A_REVERSE)
                         stdscr.attroff(curses.A_BOLD)
                     else:
-                        stdscr.addstr(idx+1, left_w // 2 + 2, display_row, curses.A_REVERSE)
+                        stdscr.addstr(idx+1, right_pane_start_x + 1, display_row, curses.A_REVERSE)
                 else:
                     if each_row[0].lower() != 'true':
                         stdscr.attron(curses.A_BOLD)
-                        stdscr.addstr(idx+1, left_w // 2 + 2, display_row)
+                        stdscr.addstr(idx+1, right_pane_start_x + 1, display_row)
                         stdscr.attroff(curses.A_BOLD)
                     else:
-                        stdscr.addstr(idx+1, left_w // 2 + 2, display_row)
+                        stdscr.addstr(idx+1, right_pane_start_x + 1, display_row)
     return csv_data
 
 def main(stdscr):
